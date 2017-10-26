@@ -3,7 +3,7 @@ Readme
 
 Run the loganalysis.py in vagrant environment .
 
-- Output : Stored in test.txt file :
+- Output : Stored in results.txt file :
   
   First 3 rows correspond to answer 1 
   Last row corresponds to answer 3
