@@ -1,4 +1,4 @@
-#Readme 
+#README 
 
 ##Installation
 
@@ -9,11 +9,13 @@
 
 ##Views created for part 2 , 3 of the queries
 
-Part 2 : created view to extract title and count from log file 
+Part 2 : 
+
+created view to extract title and count from log file 
 
 	create view Temp1 as ( select substring(path,10) as title , count(*) as C  from log group by path order by (C) DESC);
 
-Part 3 : create 2 view -- 
+Part 3 : 
 
 One for storing count of errors by date 
 
