@@ -1,13 +1,13 @@
-#README 
+# README 
 
-##Installation
+## Installation
 
 * Run   `python loganalysis.py` in vagrant environment
 
 * Output : Stored in results.txt file
    
 
-##Views created for part 2 , 3 of the queries
+## Views created for part 2 , 3 of the queries
 
 Part 2 : 
 
