@@ -5,9 +5,9 @@ Reporting tool that prints out reports (in plain text) based on the data in the 
 ## Installation
 
 
-* Import the newsdata.sql file - [here](https://d17h27t6h515a5.cloudfront.net/topher/2016/August/57b5f748_newsdata/newsdata.zip) and load into vagrant environment 
+* Import the newsdata.sql file - [here](https://d17h27t6h515a5.cloudfront.net/topher/2016/August/57b5f748_newsdata/newsdata.zip) and load into desired directory 
 
-* Run   `python loganalysis.py` file  from the same directory as newsdata.sql 
+* Run   `python loganalysis.py` file  from the same directory 
 
 * Output : Stored in results.txt file
    
