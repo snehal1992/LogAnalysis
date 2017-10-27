@@ -8,7 +8,7 @@ def connect(db_name="news"):
         cursor = conn.cursor()
         return conn, cursor
     except psycopg2.Error as e:
-        print "Unable to connect to database"
+        print("Unable to connect to database")
         sys.exit(1)
 
 
@@ -20,12 +20,16 @@ def fetch_query(query):
 
 
 def print_top_articles():
-    results = fetch_query("select  substring(path,10), count(*) as C from"
-                          + " log group by path order by (C) DESC limit 3;")
+    results = fetch_query(
+        "select title, C from articles join (select  substring(path,10)" +
+        " as slug , count(*) as C from  log where length(path) > 11  group by path"
+        " order by (C) DESC limit 3) as logSlug on articles.slug = logSlug.slug" +
+        " order by(C) DESC;")
     with open('results.txt', 'w') as f:
+        f.write("1. What are the most popular three articles of all time? \n\n")
         for row in results:
             f.write("%s - %s views \n" %
-                    (str(row[0]).replace('-', ' '), str(row[1]).replace('-', ' ')))
+                    (row[0], row[1]))
 
 
 def print_top_authors():
@@ -37,6 +41,7 @@ def print_top_authors():
         " as DB1 join Temp1 on DB1.slug = Temp1.title" +
         " group by (name) order by sum(c) DESC ;")
     with open('results.txt', 'a') as f:
+        f.write("\n2. Who are the most popular article authors of all time? \n\n")
         for row in results:
             f.write("%s - %s views \n" % (row[0], row[1]))
 
@@ -52,8 +57,10 @@ def print_top_error_days():
         " from part3 join part32 on part3.date = part32.date" +
         " where error/(total*1.0)  > 0.01;")
     with open('results.txt', 'a') as f:
+        f.write("\n3. On which days did more than 1% of requests lead to errors?\n\n")
         for row in results:
-            f.write("%s - %s %% error \n" % (row[0], row[1]))
+            f.write("%s - %s %% error \n" %
+                    (row[0], round(row[1], 2)))
 
 
 if __name__ == '__main__':
