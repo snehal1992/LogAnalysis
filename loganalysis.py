@@ -1,5 +1,6 @@
 #! /usr/bin/python3
 import psycopg2
+import sys
 
 
 def connect(db_name="news"):
@@ -15,16 +16,26 @@ def connect(db_name="news"):
 def fetch_query(query):
     conn, cursor = connect()
     results = cursor.execute(query)
-    return cursor.fetchall()
+    results1 = cursor.fetchall()
     conn.close()
+    return results1
 
 
 def print_top_articles():
-    results = fetch_query(
-        "select title, C from articles join (select  substring(path,10)" +
-        " as slug , count(*) as C from  log where length(path) > 11  group by path"
-        " order by (C) DESC limit 3) as logSlug on articles.slug = logSlug.slug" +
-        " order by(C) DESC;")
+    results = fetch_query('''
+        SELECT title, C
+        FROM articles
+        JOIN (
+        SELECT path
+        AS slug , count(*) AS C
+        FROM  log
+        WHERE length(path) > 11
+        GROUP BY path
+        ORDER BY (C) DESC limit 3)
+        AS logSlug
+        on '/article/' || articles.slug = logSlug.slug
+        ORDER BY(C) DESC;
+        ''')
     with open('results.txt', 'w') as f:
         f.write("1. What are the most popular three articles of all time? \n\n")
         for row in results:
@@ -33,13 +44,24 @@ def print_top_articles():
 
 
 def print_top_authors():
-    results = fetch_query(
-        "create view Temp1 as ( select substring(path,10) as" +
-        " title , count(*) as C  from log group by path order by (C) DESC);" +
-        "select distinct name , sum(c)  from (select *  from articles" +
-        " inner  join authors on articles.author = authors.id)" +
-        " as DB1 join Temp1 on DB1.slug = Temp1.title" +
-        " group by (name) order by sum(c) DESC ;")
+    results = fetch_query('''
+        CREATE view Temp1 AS (
+            SELECT substring(path,10) AS title , count(*) AS C
+            FROM log
+            GROUP BY path
+            ORDER BY (C) DESC
+        );
+        SELECT DISTINCT name , SUM(c)
+        FROM (
+        SELECT *
+        FROM articles INNER JOIN authors
+        ON articles.author = authors.id
+        ) AS DB1
+        JOIN Temp1
+        ON DB1.slug = Temp1.title
+        GROUP BY (name)
+        ORDER BY SUM(c) DESC;
+        ''')
     with open('results.txt', 'a') as f:
         f.write("\n2. Who are the most popular article authors of all time? \n\n")
         for row in results:
@@ -47,15 +69,24 @@ def print_top_authors():
 
 
 def print_top_error_days():
-    results = fetch_query(
-        "create view part3 as ( select time::date as date , count(*)" +
-        " as total  from log group by time::date);" +
-        "create view part32 as  (select time::date as date ," +
-        " count(*) error  from log where status = '404 NOT FOUND'" +
-        " group by time::date);" +
-        "select part3.date, error/(total*1.0) *100 as Error" +
-        " from part3 join part32 on part3.date = part32.date" +
-        " where error/(total*1.0)  > 0.01;")
+    results = fetch_query('''
+        CREATE view part3 AS (
+        SELECT time::date AS date , count(*)
+        AS total  FROM log GROUP BY time::date);
+
+        CREATE view part32 AS  (
+        SELECT time::date AS date , count(*) error
+        FROM log
+        WHERE status = '404 NOT FOUND'
+        GROUP BY time::date);
+
+        SELECT part3.date, error/(total*1.0) *100 AS Error
+        FROM part3
+        JOIN part32
+        on part3.date = part32.date
+        WHERE error/(total*1.0)  > 0.01;
+        ''')
+
     with open('results.txt', 'a') as f:
         f.write("\n3. On which days did more than 1% of requests lead to errors?\n\n")
         for row in results:
