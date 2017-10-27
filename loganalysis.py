@@ -37,8 +37,8 @@ def print_top_articles():
         ORDER BY(C) DESC;
         ''')
     with open('results.txt', 'w') as f:
-        f.write("1. What are the most popular"+ 
-            " three articles of all time? \n\n")
+        f.write("1. What are the most popular" +
+                " three articles of all time? \n\n")
         for row in results:
             f.write("%s - %s views \n" %
                     (row[0], row[1]))
@@ -64,8 +64,8 @@ def print_top_authors():
         ORDER BY SUM(c) DESC;
         ''')
     with open('results.txt', 'a') as f:
-        f.write("\n2. Who are the most popular article"+ 
-            " authors of all time? \n\n")
+        f.write("\n2. Who are the most popular article" +
+                " authors of all time? \n\n")
         for row in results:
             f.write("%s - %s views \n" % (row[0], row[1]))
 
@@ -90,8 +90,8 @@ def print_top_error_days():
         ''')
 
     with open('results.txt', 'a') as f:
-        f.write("\n3. On which days did more than 1% of "+ 
-            "requests lead to errors?\n\n")
+        f.write("\n3. On which days did more than 1% of " +
+                "requests lead to errors?\n\n")
         for row in results:
             f.write("%s - %s %% error \n" %
                     (row[0], round(row[1], 2)))
